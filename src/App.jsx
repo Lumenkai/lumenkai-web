@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 
 const img = (seed, w = 800, h = 600) => `https://picsum.photos/seed/${seed}/${w}/${h}`; // random placeholders
 const EMAIL = "juanmanuel@lumenkai.net";
@@ -341,13 +342,16 @@ function ContactPage({ t, lang, setLang }) {
     if (e.target.elements._honey.value) return; // spam trap
     setStatus("sending");
     try {
-      // FormSubmit forwards the form to your email. First submission: click the activation link they email you.
-      const res = await fetch(`https://formsubmit.co/ajax/${EMAIL}`, {
-        method: "POST",
+      // Using axios for the form submission
+      const res = await axios.post(`https://formsubmit.co/ajax/${EMAIL}`, {
+        ...data,
+        language: lang,
+        _subject: "New enquiry from the Lumenkai website",
+        _template: "table",
+        _captcha: "false",
+      }, {
         headers: { "Content-Type": "application/json", Accept: "application/json" },
-        body: JSON.stringify({ ...data, language: lang, _subject: "New enquiry from the Lumenkai website", _template: "table", _captcha: "false" }),
       });
-      if (!res.ok) throw new Error("Request failed");
       setStatus("sent");
       setData(empty);
     } catch {
